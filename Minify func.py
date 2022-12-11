@@ -1,10 +1,7 @@
-file=open("E:\sample.xml","r")
-file2=open("E:\sample2.xml","w")
-for line in file:
-      x=file.readline()
-      x=x.replace("  ", " ")
-      x=x.strip()
-      file2.write(x)      
-file.close()
-file2.close()           
-                  
+def minify(string):
+      
+      string=string.translate({ord('\t'): None})
+      string=string.translate({ord('\n'): None})
+      string= string.replace('  ', '')
+      return string            
+      
