@@ -182,6 +182,5 @@ def ErrorCheck(allTags = [], path = "sample.xml",correction = True):
                 Pj += 1
             if done: continue
             err.errMsg = "unClosedTag"
-            errors.append(err)
-            
+            errors.append(err)    
     return errors
