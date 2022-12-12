@@ -41,5 +41,5 @@ def prettify(string):
             if(f_close or f_data):
                   count=count-1
       return string_output
-string="<users>\n<user>\n<id>1</id>\n<name>Ahmed Ali</name>\n<posts>\n<post>\n<body>\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n</body>\n<topics>\n<topic>\nsolar_energy\n</topic>\n</topics>\n</post>\n</posts>\n<followers>\n<follower>\n<id>2</id>\n</follower>\n<follower>\n<id>3</id>\n</follower>\n</followers>\n</user>\n</uses>"
-print(prettify(string))
+#string="<users>\n<user>\n<id>1</id>\n<name>Ahmed Ali</name>\n<posts>\n<post>\n<body>\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n</body>\n<topics>\n<topic>\nsolar_energy\n</topic>\n</topics>\n</post>\n</posts>\n<followers>\n<follower>\n<id>2</id>\n</follower>\n<follower>\n<id>3</id>\n</follower>\n</followers>\n</user>\n</uses>"
+#print(prettify(string))
