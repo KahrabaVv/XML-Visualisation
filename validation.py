@@ -6,7 +6,7 @@ class Node:
         self.errMsg = errMsg
         pass
 
-def ErrorCheck(allTags = [], path = "sample.xml"):
+def ErrorCheck(allTags = [], path = "sample.xml",correction = True):
     tagStack = []
     id = 0
 
@@ -20,10 +20,16 @@ def ErrorCheck(allTags = [], path = "sample.xml"):
     tagName = ""
     line:str = ""
     file = open(path,'r')
+    # if correction:
 
     for line in file:
-        lineNumber +=1
         line = line.strip()
+        if correction == True:
+            for insideline in file:
+                line += insideline.strip()
+
+        lineNumber +=1
+        
         for ind in range(0,len(line)):
             #check begin of tag
             if line[ind] == '<' and not comment:
@@ -33,7 +39,7 @@ def ErrorCheck(allTags = [], path = "sample.xml"):
                     continue
                 
                 # Missing '>'
-                if symbolStack and symbolStack[-1] == '<':
+                if( symbolStack and symbolStack[-1] == '<' ):
                     currentTag.tagName = tagName
                     if tagName[0] != '/':    
                         tagStack.append(currentTag)
@@ -155,6 +161,9 @@ def ErrorCheck(allTags = [], path = "sample.xml"):
                 if tagStack[Pj].tagName[0] == '/':
                     err.unMatchedTag = tagStack.pop(Pj)
                     err.errMsg = "MisMatchTag"
+                    err.index = err.unMatchedTag.index
+                    err.line = err.unMatchedTag.line
+                    
 
                 else:
                     err.errMsg = "unClosedTag"
@@ -176,11 +185,3 @@ def ErrorCheck(allTags = [], path = "sample.xml"):
             errors.append(err)
             
     return errors
-
-      
-# errors = ErrorCheck()
-# for tag in errors:
-#     if tag.errMsg == "MisMatchTag":
-#         print(tag.tagName, tag.errMsg, tag.line, tag.index, "misMatched with", tag.unMatchedTag.tagName, tag.unMatchedTag.line, tag.unMatchedTag.index)
-#     else: print(tag.tagName, tag.errMsg, tag.line, tag.index)
-# print("end")
