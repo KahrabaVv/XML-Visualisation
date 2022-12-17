@@ -156,10 +156,10 @@ def loadMainGUI():
     action = ttk.Button(monty2, text="Clear Output", width=44, command=lambda: text_output.delete("1.0", "end"))
     action.grid(column=2, row=2, padx=8, pady=4, columnspan=2)
 
-    action = ttk.Button(monty2, text="Load", width=20)
+    action = ttk.Button(monty2, text="Load", width=20,command=loadFile)
     action.grid(column=2, row=3, padx=8, pady=4)
 
-    action = ttk.Button(monty2, text="Save", width=20)
+    action = ttk.Button(monty2, text="Save", width=20, command=saveFile)
     action.grid(column=3, row=3, padx=8, pady=4)
 
     action = ttk.Button(monty2, text="Convert", width=44)
