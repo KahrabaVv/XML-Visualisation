@@ -4,17 +4,16 @@ def minify(string):
       string=string.translate({ord('\n'): None})
       string= string.replace('  ', '')
       string= string.replace('> <','><')
-      return string
-
-def beautify(string):
+      return string       
+def prettify(string):
       string=minify(string)
       string=re.sub("<","\n<",string)
       string=re.sub(">",">\n",string)
       Lines = string.split("\n")
       string_output=""  
-      def smallest_between_two(a, b, text):
+      def between(i, j, text):
            
-            return re.findall(re.escape(a)+"(.*?)"+re.escape(b),text)
+            return re.findall(re.escape(i)+"(.*?)"+re.escape(j),text)
       o_tag=[]
       c_tag=[]
       count=-1
@@ -23,12 +22,12 @@ def beautify(string):
       for line in Lines:
             f_data=True
             f_close=False
-            size=len(smallest_between_two('<', '>',line ))
+            size=len(between('<', '>',line ))
       
             if(len(line)==0):
                   continue
             if(size!=0):
-                  for tag in smallest_between_two('<', '>',line ):
+                  for tag in between('<', '>',line ):
                         f_data=False 
                         if("/" in tag):
                               c_tag.append(tag)
