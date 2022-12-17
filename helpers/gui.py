@@ -1,12 +1,69 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+from tkinter import filedialog
 import helpers.prettify as prettify
 
 # Global Variables
 text_input = None
 text_output = None
 messagebox = tk.messagebox
+
+def loadFile(validate = False):
+    # Open file dialog
+    file = tk.filedialog.askopenfile(mode="r", filetypes=[("XML Files", "*.xml")])
+
+    # Check if file is selected
+    if file is None:
+        return
+
+    # Read the file
+    text = file.read()
+
+    # Check if file is empty
+    if text == "":
+        messagebox.showerror("Error", "File is empty!")
+        return
+
+    # Validate the file
+    if validate:
+        errors = validator.ErrorCheck(text)
+        if errors:
+            messagebox.showerror("Error", "File is not valid!")
+            return
+
+    # Clear the Text Area
+    text_input.delete("1.0", "end")
+
+    # Insert the text into the Text Area
+    text_input.insert("1.0", text)
+
+    # Show a success message
+    messagebox.showinfo("Success", "File loaded successfully!")
+
+def saveFile():
+    # Get Text from Text Area
+    text = text_output.get("1.0", "end-1c")
+
+    # Check if Text Area is empty
+    if text == "":
+        messagebox.showerror("Error", "Please enter some text!")
+        return
+
+    # Open file dialog
+    file = tk.filedialog.asksaveasfile(mode="w", filetypes=[("XML Files", "*.xml")])
+
+    # Check if file is selected
+    if file is None:
+        messagebox.showerror("Error", "File not selected")
+        return
+
+    # Write the text into the file
+    file.write(text)
+
+    # Show a success message
+    messagebox.showinfo("Success", "File saved successfully!")
+
 
 def minifyBtn():
     # Get Text from Text Area

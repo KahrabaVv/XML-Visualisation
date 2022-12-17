@@ -37,7 +37,7 @@ def prettify(string):
                               count+=1
             if(f_data):
                   count+=1
-            string_output=string_output+ "\t"*count+line+"\n"
+            string_output=string_output+ "    "*count+line+"\n"
             if(f_close or f_data):
                   count=count-1
       return string_output
