@@ -96,7 +96,7 @@ def beautifyBtn():
         return
 
     # Beautify the text
-    beautified_text = prettify.beautify(text)
+    beautified_text = prettify.prettify(text)
 
     # Clear the Text Area
     text_output.delete("1.0", "end")
