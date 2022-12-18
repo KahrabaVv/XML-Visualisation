@@ -5,7 +5,7 @@ def minify(string):
       string= string.replace('  ', '')
       string= string.replace('> <','><')
       return string       
-def prettify(string):
+def beautify(string):
       string=minify(string)
       string=re.sub("<","\n<",string)
       string=re.sub(">",">\n",string)

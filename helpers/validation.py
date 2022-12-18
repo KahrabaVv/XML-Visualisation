@@ -5,8 +5,14 @@ class Node:
         self.line = line
         self.errMsg = errMsg
         pass
+    def __str__(self) -> str:
+        return f"Node: {self.tagName} at line {self.line} index {self.index} with error message: {self.errMsg}"
+    def __repr__(self) -> str:
+        return self.__str__()
 
-def ErrorCheck(allTags = [], path = "sample.xml",correction = True):
+
+
+def ErrorCheck(allTags = [], path = "sample.xml", correction = True) -> list:
     tagStack = []
     id = 0
 
@@ -170,8 +176,6 @@ def ErrorCheck(allTags = [], path = "sample.xml",correction = True):
                 Pf = len(tagStack) -1
                 errors.append(err)
                 continue
-
-
 
             while Pj <= Pf:
                 if tagStack[Pj].tagName == ('/' + buttonTag.tagName):

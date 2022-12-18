@@ -1,6 +1,5 @@
-path = 'sample.xml'
-from validation import ErrorCheck,Node
-def correction(path:str):
+from helpers.validation import ErrorCheck,Node
+def correction(path:str = None) -> str:
     file = open(path,'r')
     line = ""
     for inline in file:
