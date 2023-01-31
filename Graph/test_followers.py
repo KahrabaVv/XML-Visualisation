@@ -11,4 +11,4 @@ mostAct = sna.mostActiveUser(graph).name
 
 print(mostInf)
 print(mostAct)
-
+print (sna.post_search(graph,"Lorem"))
