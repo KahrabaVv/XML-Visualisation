@@ -1,6 +1,6 @@
 from read_xml import graphUser, userPost
 from Graph_Converter import GraphOfUsers
-
+import re
 class SNA_Helper:
     def __int__(self):
         pass
@@ -59,3 +59,38 @@ class SNA_Helper:
                 most_active = users[i]
 
         return most_active
+        @staticmethod           
+    def post_search(graph,string):
+          users=graph.vertices
+          numUsers=graph.numUsers
+          Dict={}
+          for i in range (0,numUsers):
+                postsnum=len(users[i].posts)
+                for post in range(0,postsnum):
+                      postbody=(users[i].posts[post].body)
+                      result=(re.search(string, postbody))
+                      if(result!=None):
+                            Dict [users[i].name]=users[i].posts[post].body
+          if Dict == {}:
+                return "didn't match any post"                  
+
+          return Dict
+
+class Dictionary:
+
+    def __init__(self):
+            self.keys = []
+            self.values = []
+
+    def add(self, key, value):
+            self.keys.append(key)
+            self.values.append(value)
+
+    def get(self, key):
+            if key in self.keys:
+                  return self.values[self.keys.index(key)]
+
+
+                  
+
+
