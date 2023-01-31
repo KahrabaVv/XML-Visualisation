@@ -59,7 +59,7 @@ class SNA_Helper:
                 most_active = users[i]
 
         return most_active
-        @staticmethod           
+    @staticmethod           
     def post_search(graph,string):
           users=graph.vertices
           numUsers=graph.numUsers
