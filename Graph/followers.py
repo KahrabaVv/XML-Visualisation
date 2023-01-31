@@ -70,7 +70,7 @@ class SNA_Helper:
                       postbody=(users[i].posts[post].body)
                       result=(re.search(string, postbody))
                       if(result!=None):
-                            Dict [users[i].name]=users[i].posts[post].body
+                            Dict [users[i].name]=users[i].posts[post].body     # if we want list of posts only without it's users list=[]   list[i]=users[i].posts[post].body
           if Dict == {}:
                 return "didn't match any post"                  
 
