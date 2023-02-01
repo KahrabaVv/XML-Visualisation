@@ -67,16 +67,29 @@ class SNA_Helper:
           for i in range (0,numUsers):
                 postsnum=len(users[i].posts)
                 for post in range(0,postsnum):
-                      postbody=(users[i].posts[post].body)
-                      result=(re.search(string, postbody))
-                      if(result!=None):
-                            Dict [users[i].name]=users[i].posts[post].body     # if we want list of posts only without it's users list=[]   list[i]=users[i].posts[post].body
+                  result2=False
+                  postbody=(users[i].posts[post].body)
+                  topicbody=(users[i].posts[post].topics)
+                  result=(re.search(string, postbody))
+                  if string in topicbody:
+                        result2=True      
+                  if(result!=None or result2):
+                            Dict [users[i].name]=users[i].posts[post].body
           if Dict == {}:
                 return "didn't match any post"                  
 
           return Dict
+    
+    visited = set() # Set to keep track of visited nodes of graph.
 
-class Dictionary:
+    def dfs(visited, graph, node):  #function for dfs 
+        if node not in visited:
+            print (node)
+            visited.add(node)
+            for neighbour in graph[node]:
+                dfs(visited, graph, neighbour)
+
+class Dictionary:  # I didn't use it when you say --> use hash mab normally without making implemention.
 
     def __init__(self):
             self.keys = []
