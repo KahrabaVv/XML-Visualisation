@@ -439,8 +439,7 @@ def newWindow():
     global graph
     mostInf = SNA_Helper().mostInfluencerUser(graph)
     mostAct = SNA_Helper().mostActiveUser(graph)
-    mostActiveUser = "Most Active User: #" + str(mostAct.id) + " " + mostAct.name + " with " + str(
-        len(mostAct.posts)) + " posts"
+    mostActiveUser = "Most Active User: #" + str(mostAct.id) + " " + mostAct.name + " follows " + str(len(graph.getUserFollowedList(graph.vertices[mostAct.id]))) + " users"
     mostInfluencedUser = "Most Influencer User: #" + str(mostInf.id) + " " + mostInf.name + " with " + str(
         len(mostInf.followers)) + " followers"
 
