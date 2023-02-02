@@ -9,6 +9,7 @@
 import logging
 from typing import List, Tuple
 
+
 def compress(payload: str, max_offset: int = 2047, max_length: int = 31, path: str = None):
     # Create the input
     input_array = str(payload[:])
@@ -26,13 +27,13 @@ def compress(payload: str, max_offset: int = 2047, max_length: int = 31, path: s
         window += input_array[:length]
         input_array = input_array[length:]
 
-
     if path is not None:
-        with open (path, "wb") as f:
+        with open(path, "wb") as f:
             # Convert to bytes
             f.write(to_bytes(output))
 
     return output
+
 
 def decompress(path) -> str:
     input_array: List[Tuple[int, int, str]] = None
@@ -64,7 +65,8 @@ def decompress(path) -> str:
 
     return output
 
-def to_bytes(compressed_representation: [(int, int, str)], offset_bits: int = 11, length_bits: int = 5,) -> bytearray:
+
+def to_bytes(compressed_representation: [(int, int, str)], offset_bits: int = 11, length_bits: int = 5, ) -> bytearray:
     # Create a bytearray to store the output
     output = bytearray()
 
@@ -86,7 +88,8 @@ def to_bytes(compressed_representation: [(int, int, str)], offset_bits: int = 11
 
     return output
 
-def from_bytes(compressed_bytes: bytearray, offset_bits: int = 11, length_bits: int = 5,) -> [(int, int, str)]:
+
+def from_bytes(compressed_bytes: bytearray, offset_bits: int = 11, length_bits: int = 5, ) -> [(int, int, str)]:
     offset_length_bytes = int((offset_bits + length_bits) / 8)
 
     output = []
@@ -108,6 +111,7 @@ def from_bytes(compressed_bytes: bytearray, offset_bits: int = 11, length_bits: 
         output.append((offset, length, char_out))
 
     return output
+
 
 def best_length_offset(window: str, input_string: str, max_length: int = 15, max_offset: int = 4095) -> (int, int):
     if max_offset < len(window):

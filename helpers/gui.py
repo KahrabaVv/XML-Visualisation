@@ -9,8 +9,12 @@ import helpers.compressor as compressor
 import helpers.converter as converter
 import helpers.visualizer as visualizer
 
-from Graph.followers import SNA_Helper
-from Graph.Graph_Converter import GraphOfUsers
+from helpers.sna import SNA_Helper
+from helpers.graph import GraphOfUsers
+
+# Authors of the project
+authors = ["David Ayman - 1900904", "Kerolos Sameh - 1900144", "Andrew Adel - 1900158", "Mark Emad - 1901510",
+           "Andrew Samir - 1900242"]
 
 # Global Variables
 text_input = None
@@ -19,7 +23,7 @@ messagebox = tk.messagebox
 listbox, listbox_mutual = None, None
 graph = None
 pathOfLastFile = None
-load_btn, save_btn, convert_btn, minify_btn, beautify_btn, visualize_btn = None, None, None, None, None, None
+load_btn, save_btn, convert_btn, minify_btn, beautify_btn, analysis_btn, visualize_btn = None, None, None, None, None, None, None
 
 
 def compress():
@@ -117,9 +121,11 @@ def loadFile(validate=True):
             # Insert the text into the Text Area
             text_input.insert("1.0", text)
 
-    pathOfLastFile = file.name
+    global graph
+    graph = GraphOfUsers(99, file.name)
 
-    # enableAll()
+    # Enable buttons
+    toggle(state="normal")
 
     # Show a success message
     messagebox.showinfo("Success", "File loaded successfully!")
@@ -224,12 +230,112 @@ def visualize():
     visualizer.visualizeGraph(pathOfLastFile)
 
 
+def getMutualFriends(user1, user2):
+    # Convert user1 and user2 to int
+    user1 = graph.getUserFromId(int(user1))
+    user2 = graph.getUserFromId(int(user2))
+    mutual_friends = SNA_Helper().getMutualFollowers(user1, user2)
+    listbox_mutual.delete(0, tk.END)
+    if len(mutual_friends) == 0:
+        listbox_mutual.insert(tk.END, "No mutual friends found")
+    else:
+        for friend in mutual_friends:
+            listbox_mutual.insert(tk.END, graph.getUserFromId(friend).name)
+
+
+def getSuggestions(user):
+    # Get suggestions for a user
+    suggestions = SNA_Helper().suggestFollowers(graph.getUserFromId(int(user)), graph)
+    listbox_suggestions.delete(0, tk.END)
+    if len(suggestions) == 0:
+        listbox_suggestions.insert(tk.END, "No suggestions found")
+    else:
+        for suggestion in suggestions:
+            listbox_suggestions.insert(tk.END, graph.getUserFromId(suggestion).name)
+
+
+def search(text: str):
+    # search for posts that contain the text
+    results = SNA_Helper().post_search(graph, text)
+
+    # clear the listbox
+    listbox.delete(0, tk.END)
+
+    # list of posts including the author and the content
+    for author in results:
+        if author == "No Results Found":
+            listbox.insert(tk.END, author)
+        else:
+            listbox.insert(tk.END, author + ": " + results[author])
+
+
+def populateMatrix(tab):
+    global graph
+    # Label for the matrix
+    ttk.Label(tab, text="Adjacency Matrix", font=("Helvetica", 16)).grid(column=0, row=0, padx=8, pady=4)
+
+    # Get the number of users
+    lenOfUsers = graph.numUsers
+
+    # create the tree and scrollbars
+    trv = ttk.Treeview(tab, selectmode='browse')
+    trv.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
+
+    # Defining number of columns
+    arry = ()
+    for i in range(0, lenOfUsers + 1):
+        arry = arry + (str(i + 1),)
+    trv["columns"] = arry
+
+    # Defining heading
+    trv['show'] = 'headings'
+
+    # Formatting columns
+    for column in trv["columns"]:
+        trv.column(column, width=63, anchor='c')
+
+    # Populating the columns
+    for column in trv["columns"]:
+        if column == "1":
+            trv.heading(column, text="User ID")
+        else:
+            if graph.vertices[int(column) - 2] is not None:
+                trv.heading(column, text=graph.vertices[int(column) - 2].id)
+            else:
+                break
+
+    # Populating the rows
+    edges = graph.edges
+    for i in range(0, lenOfUsers):
+        for j in range(0, len(edges[i])):
+            edges[i][j] = str(edges[i][j])
+        edges[i].insert(0, graph.vertices[i].id)
+
+    # Inserting the data
+    for i in range(0, lenOfUsers):
+        trv.insert("", 'end', text=graph.vertices[i].id, values=edges[i])
+
+
+def visualize():
+    visualizer.visualizeGraph(graph)
+
+
+def toggle(state: str = "disabled"):
+    # Toggle all buttons
+    save_btn.configure(state=state)
+    convert_btn.configure(state=state)
+    minify_btn.configure(state=state)
+    beautify_btn.configure(state=state)
+    analysis_btn.configure(state=state)
+    visualize_btn.configure(state=state)
+
+
 def loadMainGUI():
     # Create instance
     win = tk.Tk()
 
     # Add a title
-    win.title("XML to JSON Conversion")
+    win.title("XML Visualizer")
 
     # Disable resizing the GUI
     win.resizable(0, 0)
@@ -254,61 +360,55 @@ def loadMainGUI():
     text_input = tk.Text(monty, width=50, height=30)
     text_input.grid(column=0, row=0, padx=8, pady=4)
 
-    # Buttons (Validation, Minify, Beautify, Clear, Load, Save)
+    # Buttons (Validation, Minify, Beautify, Clear, Load, Save, Visualize, Analysis)
     monty2 = ttk.LabelFrame(tab1, text=' Actions ')
     monty2.grid(column=1, row=0, padx=8, pady=0, rowspan=1)
 
-    action = ttk.Button(monty2, text="Compression", width=20, command=compress)
-    action.grid(column=2, row=0, padx=8, pady=4)
+    # Compression and Decompression
+    ttk.Button(monty2, text="Compression", width=20, command=compress).grid(column=2, row=0, padx=8, pady=4)
+    ttk.Button(monty2, text="Decompression", width=20, command=decompress).grid(column=3, row=0, padx=8, pady=4)
 
-    action = ttk.Button(monty2, text="Decompression", width=20, command=decompress)
-    action.grid(column=3, row=0, padx=8, pady=4)
+    # Minify and Beautify
+    global minify_btn, beautify_btn
+    minify_btn = ttk.Button(monty2, text="Minify", width=20, command=minifyBtn)
+    minify_btn.grid(column=2, row=1, padx=8, pady=4)
+    beautify_btn = ttk.Button(monty2, text="Beautify", width=20, command=beautifyBtn)
+    beautify_btn.grid(column=3, row=1, padx=8, pady=4)
 
-    action = ttk.Button(monty2, text="Minify", width=20, command=minifyBtn)
-    action.grid(column=2, row=1, padx=8, pady=4)
-    minify_btn = action
+    # Clear
+    ttk.Button(monty2, text="Clear Output", width=44, command=lambda: text_output.delete("1.0", "end")).grid(column=2,
+                                                                                                             row=3,
+                                                                                                             padx=8,
+                                                                                                             pady=4,
+                                                                                                             columnspan=2)
+    # Load and Save
+    global save_btn
+    ttk.Button(monty2, text="Load File", width=20, command=loadFile).grid(column=2, row=4, padx=8, pady=4)
+    save_btn = ttk.Button(monty2, text="Save Output", width=20, command=saveFile)
+    save_btn.grid(column=3, row=4, padx=8, pady=4)
 
-    action = ttk.Button(monty2, text="Beautify", width=20, command=beautifyBtn)
-    action.grid(column=3, row=1, padx=8, pady=4)
-    beautify_btn = action
+    # Convert Button
+    global convert_btn
+    convert_btn = ttk.Button(monty2, text="Convert to JSON", width=44, command=convertToJSON)
+    convert_btn.grid(column=2, row=5, padx=8, pady=4, columnspan=2)
 
-    action = ttk.Button(monty2, text="Clear Output", width=44, command=lambda: text_output.delete("1.0", "end"))
-    action.grid(column=2, row=3, padx=8, pady=4, columnspan=2)
+    # Analysis Button
+    global analysis_btn
+    analysis_btn = ttk.Button(monty2, text="Analysis", width=44, command=newWindow)
+    analysis_btn.grid(column=2, row=6, padx=8, pady=4, columnspan=2)
 
-    action = ttk.Button(monty2, text="Load File", width=20, command=loadFile)
-    action.grid(column=2, row=4, padx=8, pady=4)
-    load_btn = action
-
-    action = ttk.Button(monty2, text="Save Output", width=20, command=saveFile)
-    action.grid(column=3, row=4, padx=8, pady=4)
-    save_btn = action
-
-    action = ttk.Button(monty2, text="Convert to JSON", width=44, command=convertToJSON)
-    action.grid(column=2, row=5, padx=8, pady=4, columnspan=2)
-    convert_btn = action
-
-    action = ttk.Button(monty2, text="Analysis Network", width=44, command=newWindow)
-    action.grid(column=2, row=6, padx=8, pady=4, columnspan=2)
-    visualize_btn = action
+    # Visualize Button
+    global visualize_btn
+    visualize_btn = ttk.Button(monty2, text="Visualize", width=44, command=visualize)
+    visualize_btn.grid(column=2, row=7, padx=8, pady=4, columnspan=2)
 
     # We are creating a container frame to hold all other widgets
     monty3 = ttk.LabelFrame(tab1, text=' Credits ', padding=10)
     monty3.grid(column=1, row=1, padx=8, pady=4, rowspan=5)
 
-    credits = ttk.Label(monty3, text="David Ayman - 1900904", width=44)
-    credits.grid(column=0, row=0, padx=8, pady=4)
-
-    credits = ttk.Label(monty3, text="Kerolos Sameh - 1900144", width=44)
-    credits.grid(column=0, row=1, padx=8, pady=4)
-
-    credits = ttk.Label(monty3, text="Andrew Adel - 1900158", width=44)
-    credits.grid(column=0, row=2, padx=8, pady=4)
-
-    credits = ttk.Label(monty3, text="Mark Emad - 1901510", width=44)
-    credits.grid(column=0, row=3, padx=8, pady=4)
-
-    credits = ttk.Label(monty3, text="Andrew Samir - 1900242", width=44)
-    credits.grid(column=0, row=4, padx=8, pady=4)
+    # Credits
+    for author in authors:
+        ttk.Label(monty3, text=author, width=44).grid(column=0, row=authors.index(author), padx=8, pady=4)
 
     # We are creating a container frame to hold all other widgets
     monty4 = ttk.LabelFrame(tab1, text='Output')
@@ -322,55 +422,27 @@ def loadMainGUI():
     # Place cursor into name Entry
     text_input.focus()
 
-    # disableAll()
+    # Disable all buttons
+    toggle(state="disabled")
 
     # Show a success message
-    # messagebox.showinfo("Welcome", "Welcome to XML to JSON Conversion!")
+    messagebox.showinfo("Welcome", "Welcome to XML Visualizer!")
 
     # Show a warning message
-    # messagebox.showwarning("Warning", "Load a file to start!")
-
-    # Disable all buttons
-    # save_btn.configure(state="disabled")
-    # convert_btn.configure(state="disabled")
-    # minify_btn.configure(state="disabled")
-    # beautify_btn.configure(state="disabled")
-    # visualize_btn.configure(state="disabled")
+    messagebox.showwarning("Warning", "Load a file to start!")
 
     # Start GUI
     win.mainloop()
-    newWindow()
 
-
-# def enableAll():
-#     # Enable all buttons
-#     save_btn.configure(state="normal")
-#     convert_btn.configure(state="normal")
-#     minify_btn.configure(state="normal")
-#     beautify_btn.configure(state="normal")
-#     visualize_btn.configure(state="normal")
-
-def search(text:str):
-    # search for posts that contain the text
-    results = SNA_Helper().post_search(graph, text)
-
-    # clear the listbox
-    listbox.delete(0, tk.END)
-
-    # list of posts including the author and the content
-    for author in results:
-        if author == "No Results Found":
-            listbox.insert(tk.END, author)
-        else:
-            listbox.insert(tk.END, author + ": " + results[author])
 
 def newWindow():
     global graph
-    graph = GraphOfUsers(6, "Graph\\sample2.xml")
     mostInf = SNA_Helper().mostInfluencerUser(graph)
     mostAct = SNA_Helper().mostActiveUser(graph)
-    mostActiveUser = "Most Active User: #" + str(mostAct.id) + " " + mostAct.name + " with " + str(len(mostAct.posts)) + " posts"
-    mostInfluencedUser = "Most Influencer User: #" + str(mostInf.id) + " " + mostInf.name + " with " + str(len(mostInf.followers)) + " followers"
+    mostActiveUser = "Most Active User: #" + str(mostAct.id) + " " + mostAct.name + " with " + str(
+        len(mostAct.posts)) + " posts"
+    mostInfluencedUser = "Most Influencer User: #" + str(mostInf.id) + " " + mostInf.name + " with " + str(
+        len(mostInf.followers)) + " followers"
 
     # Create instance
     win = tk.Tk()
@@ -393,10 +465,6 @@ def newWindow():
     # Create Network Analysis Tab
     tab2 = ttk.Frame(tabControl)  # Add a second tab
     tabControl.add(tab2, text='SNA Analysis')  # Make second tab visible
-
-    # Create Visualization Tab
-    tab3 = ttk.Frame(tabControl)  # Add a second tab
-    tabControl.add(tab3, text='Visualization')  # Make second tab visible
 
     # Create Posts Tab
     tab4 = ttk.Frame(tabControl)  # Add a second tab
@@ -432,7 +500,6 @@ def newWindow():
     action = ttk.Button(monty21, text="Find", width=20, command=lambda: getSuggestions(input_suggestion.get()))
     action.grid(column=1, row=0, padx=8, pady=4)
 
-
     # Monty 22 contains mutual friends
     monty22 = ttk.LabelFrame(tab2, text=' Mutual Friends ')
     monty22.grid(column=0, row=20, padx=8, pady=4, rowspan=5)
@@ -452,13 +519,9 @@ def newWindow():
     input_mutual2.insert(0, "ID of second user")
 
     # Find button
-    action = ttk.Button(monty22, text="Find", width=15, command=lambda: getMutualFriends(input_mutual1.get(), input_mutual2.get()))
+    action = ttk.Button(monty22, text="Find", width=15,
+                        command=lambda: getMutualFriends(input_mutual1.get(), input_mutual2.get()))
     action.grid(column=2, row=0, padx=8, pady=4)
-
-    # tab 3 contains visualization of the network
-    # We are creating a container frame to hold all other widgets
-    monty3 = ttk.LabelFrame(tab3, text=' Visualization ')
-    monty3.grid(column=0, row=0, padx=8, pady=4, rowspan=5)
 
     # tab 4 contains input for search and search button in same row and scrollable list of posts in another row
     # We are creating a container frame to hold all other widgets
@@ -480,70 +543,3 @@ def newWindow():
 
     # Retrieve all posts
     search("")
-
-def getMutualFriends(user1, user2):
-    # Convert user1 and user2 to int
-    user1 = graph.getUserFromId(int(user1))
-    user2 = graph.getUserFromId(int(user2))
-    mutual_friends = SNA_Helper().getMutualFollowers(user1, user2)
-    listbox_mutual.delete(0, tk.END)
-    if len(mutual_friends) == 0:
-        listbox_mutual.insert(tk.END, "No mutual friends found")
-    else:
-        for friend in mutual_friends:
-            listbox_mutual.insert(tk.END, graph.getUserFromId(friend).name)
-
-def getSuggestions(user):
-    # Get suggestions for a user
-    suggestions = SNA_Helper().suggestFollowers(graph.getUserFromId(int(user)), graph)
-    print(suggestions)
-    listbox_suggestions.delete(0, tk.END)
-    if len(suggestions) == 0:
-        listbox_suggestions.insert(tk.END, "No suggestions found")
-    else:
-        for suggestion in suggestions:
-            listbox_suggestions.insert(tk.END, graph.getUserFromId(suggestion).name)
-
-
-def populateMatrix(tab):
-    # Label for the matrix
-    ttk.Label(tab, text="Adjacency Matrix", font=("Helvetica", 16)).grid(column=0, row=0, padx=8, pady=4)
-
-    # Get the number of users
-    lenOfUsers = len(graph.vertices)
-
-    # create the tree and scrollbars
-    trv = ttk.Treeview(tab, selectmode ='browse')
-    trv.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
-
-    # Defining number of columns
-    arry = ()
-    for i in range(0, lenOfUsers + 1):
-        arry = arry + (str(i + 1),)
-    trv["columns"] = arry
-
-    # Defining heading
-    trv['show'] = 'headings'
-
-    # Formatting columns
-    for column in trv["columns"]:
-        trv.column(column, width=63, anchor='c')
-
-    # Populating the columns
-    for column in trv["columns"]:
-        if column == "1":
-            trv.heading(column, text="User ID")
-        else:
-            trv.heading(column, text=graph.vertices[int(column) - 2].id)
-
-    # Populating the rows
-    edges = graph.edges
-    for i in range(0, len(edges)):
-        for j in range(0, len(edges[i])):
-            edges[i][j] = str(edges[i][j])
-        edges[i].insert(0, graph.vertices[i].id)
-
-    # Inserting the data
-    for i in range(0, len(edges)):
-        trv.insert("", 'end', text=graph.vertices[i].id, values=edges[i])
-

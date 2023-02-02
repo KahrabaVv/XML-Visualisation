@@ -1,18 +1,19 @@
 class Node:
-    def __init__(self, tagName, index, line, errMsg = None) -> None:
+    def __init__(self, tagName, index, line, errMsg=None) -> None:
         self.tagName = tagName
         self.index = index
         self.line = line
         self.errMsg = errMsg
         pass
+
     def __str__(self) -> str:
         return f"Node: {self.tagName} at line {self.line} index {self.index} with error message: {self.errMsg}"
+
     def __repr__(self) -> str:
         return self.__str__()
 
 
-
-def ErrorCheck(allTags = [], path = "sample.xml", correction = True) -> list:
+def ErrorCheck(allTags=[], path="sample.xml", correction=True) -> list:
     tagStack = []
     id = 0
 
@@ -24,8 +25,8 @@ def ErrorCheck(allTags = [], path = "sample.xml", correction = True) -> list:
     symbolStack = []
     comment = False
     tagName = ""
-    line:str = ""
-    file = open(path,'r')
+    line: str = ""
+    file = open(path, 'r')
     # if correction:
 
     for line in file:
@@ -34,47 +35,47 @@ def ErrorCheck(allTags = [], path = "sample.xml", correction = True) -> list:
             for insideline in file:
                 line += insideline.strip()
 
-        lineNumber +=1
-        
-        for ind in range(0,len(line)):
-            #check begin of tag
+        lineNumber += 1
+
+        for ind in range(0, len(line)):
+            # check begin of tag
             if line[ind] == '<' and not comment:
-                #check if there is unclosed tag before
-                if len(line) > (ind + 3) and  line[ind+1:ind+4] == '!--': 
+                # check if there is unclosed tag before
+                if len(line) > (ind + 3) and line[ind + 1:ind + 4] == '!--':
                     comment = True
                     continue
-                
+
                 # Missing '>'
-                if( symbolStack and symbolStack[-1] == '<' ):
+                if (symbolStack and symbolStack[-1] == '<'):
                     currentTag.tagName = tagName
-                    if tagName[0] != '/':    
+                    if tagName[0] != '/':
                         tagStack.append(currentTag)
                         currentTag.id = id
                         allTags.append(currentTag)
-                        id+=1
+                        id += 1
                     else:
-                        #close of open tag
+                        # close of open tag
                         if tagName[1:] == tagStack[-1].tagName:
                             tagStack.pop()
 
-                            cur = Node(tagName,ind,lineNumber)
+                            cur = Node(tagName, ind, lineNumber)
                             cur.id = id
-                            id+=1
+                            id += 1
                             allTags.append(cur)
 
                         else:
                             tagStack.append(currentTag)
                             currentTag.id = id
                             allTags.append(currentTag)
-                            id+=1
+                            id += 1
                             pass
                     symbolStack.pop()
                     errMsg = "Missing>"
                     currentTag.errMsg = errMsg
                     errors.append(currentTag)
                     pass
-                currentTag = Node("",ind,lineNumber)
-                
+                currentTag = Node("", ind, lineNumber)
+
                 #
                 symbolStack.append(line[ind])
                 tagName = ""
@@ -82,52 +83,52 @@ def ErrorCheck(allTags = [], path = "sample.xml", correction = True) -> list:
 
             elif line[ind] == '>':
                 # check end of Comment
-                if ind > 3 and line[ind-2:ind] == '--': 
+                if ind > 3 and line[ind - 2:ind] == '--':
                     comment = False
                     continue
                 if comment: continue
 
-                #check Missing <
+                # check Missing <
                 if not symbolStack:
                     n = 1
                     tempTag = []
                     while True:
-                        tempTag.append(line[ind-n])
+                        tempTag.append(line[ind - n])
                         # print(line[ind-n-1], ind-n-1)
-                        if ind-n-1 <0 or line[ind-n-1] == " " or line[ind-n] == "/" or line[ind-n-1] == ">":
+                        if ind - n - 1 < 0 or line[ind - n - 1] == " " or line[ind - n] == "/" or line[
+                            ind - n - 1] == ">":
                             break
-                        n+=1
+                        n += 1
                     tagName = ""
                     while tempTag:
                         tagName += tempTag.pop()
                     symbolStack.append('<')
-                    currentTag = Node(tagName,ind,lineNumber,"Missing<")
+                    currentTag = Node(tagName, ind, lineNumber, "Missing<")
                     errors.append(currentTag)
 
-                    
-                #if begin of tag
+                # if begin of tag
 
-                if tagName[0] != '/':    
+                if tagName[0] != '/':
                     currentTag.tagName = tagName
                     tagStack.append(currentTag)
                     currentTag.id = id
                     allTags.append(currentTag)
-                    id+=1
+                    id += 1
                 else:
-                    #close of tag with open tag
+                    # close of tag with open tag
                     if tagName[1:] == tagStack[-1].tagName:
                         tagStack.pop()
 
-                        cur = Node(tagName,ind,lineNumber)
+                        cur = Node(tagName, ind, lineNumber)
                         cur.id = id
-                        id+=1
+                        id += 1
                         allTags.append(cur)
 
                     else:
                         currentTag.tagName = tagName
                         tagStack.append(currentTag)
                         currentTag.id = id
-                        id+=1
+                        id += 1
                         allTags.append(currentTag)
                         pass
                 symbolStack.pop()
@@ -135,30 +136,29 @@ def ErrorCheck(allTags = [], path = "sample.xml", correction = True) -> list:
 
             elif symbolStack:
                 if not comment:
-                    tagName = tagName + line[ind] 
+                    tagName = tagName + line[ind]
 
-
-    Pf = len(tagStack) -1
+    Pf = len(tagStack) - 1
     while tagStack:
         Pj = 0
         done = False
         if Pf == Pj:
             buttonTag = tagStack.pop(0)
-            err = Node(buttonTag.tagName, buttonTag.index,buttonTag.line)
+            err = Node(buttonTag.tagName, buttonTag.index, buttonTag.line)
             err.id = buttonTag.id
             if buttonTag.tagName[0] == '/':
                 err.errMsg = "unOpenedTag"
             else:
                 err.errMsg = "unClosedTag"
-            Pf = len(tagStack) -1
+            Pf = len(tagStack) - 1
             errors.append(err)
             continue
 
         buttonTag = tagStack.pop(0)
-        err = Node(buttonTag.tagName, buttonTag.index,buttonTag.line)
+        err = Node(buttonTag.tagName, buttonTag.index, buttonTag.line)
         err.id = buttonTag.id
 
-        Pf -=1
+        Pf -= 1
         if buttonTag.tagName[0] == '/':
             err.errMsg = "unOpenedTag"
             errors.append(err)
@@ -169,22 +169,22 @@ def ErrorCheck(allTags = [], path = "sample.xml", correction = True) -> list:
                     err.errMsg = "MisMatchTag"
                     err.index = err.unMatchedTag.index
                     err.line = err.unMatchedTag.line
-                    
+
 
                 else:
                     err.errMsg = "unClosedTag"
-                Pf = len(tagStack) -1
+                Pf = len(tagStack) - 1
                 errors.append(err)
                 continue
 
             while Pj <= Pf:
                 if tagStack[Pj].tagName == ('/' + buttonTag.tagName):
                     tagStack.pop(Pj)
-                    Pf = Pj -1
+                    Pf = Pj - 1
                     done = True
                     break
                 Pj += 1
             if done: continue
             err.errMsg = "unClosedTag"
-            errors.append(err)    
+            errors.append(err)
     return errors
