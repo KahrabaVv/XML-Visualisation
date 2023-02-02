@@ -7,7 +7,7 @@ class SNA_Helper:
 
     # function to get the mutual followers between 2 users
     @staticmethod
-    def getMutualFollowers(user1:graphUser, user2:graphUser) -> list[graphUser]:
+    def getMutualFollowers(user1:graphUser, user2:graphUser) -> list:
         mutualFollowers = []
         for follower in user1.followers:
             if follower in user2.followers:
@@ -20,20 +20,16 @@ class SNA_Helper:
 
     # suggesting a list of users to follow for each user (the followers of his followers)
     @staticmethod
-    def suggestFollowers(users:list[graphUser]) -> list[list[graphUser]]:
-        suggestions = []
-        for user in users:
-            suggestedFollowers = []
-            for follower in user.followers:
-                for followerFollower in users[follower].followers:
-                    if followerFollower not in user.followers and followerFollower != user.id:
-                        suggestedFollowers.append(followerFollower)
-                        pass
+    def suggestFollowers(user:graphUser, graph: GraphOfUsers) -> list:
+        suggestedFollowers = []
+        for follower in user.followers:
+            for followerFollower in graph.getUserFromId(follower).followers:
+                if followerFollower not in user.followers and followerFollower != user.id and followerFollower not in suggestedFollowers:
+                    suggestedFollowers.append(followerFollower)
                     pass
                 pass
-            suggestions.append(suggestedFollowers)
             pass
-        return suggestions
+        return suggestedFollowers
         pass
 
 
