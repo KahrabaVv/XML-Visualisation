@@ -1,5 +1,6 @@
 import re
 
+
 class xmlTreeNode:
     def __init__(self, name, value, parent):
         self.name = name
@@ -56,6 +57,7 @@ def xmlPayloadToTree(payload: str) -> xmlTreeNode:
 
     return root
 
+
 def xmlTreeToJSON(root: xmlTreeNode) -> str:
     if root.children == []:
         return f'"{root.name}": "{root.value}"'
@@ -96,6 +98,7 @@ def xmlTreeToJSON(root: xmlTreeNode) -> str:
 
     output += "}"
     return output
+
 
 def xmlToJSON(payload: str) -> str:
     return xmlTreeToJSON(xmlPayloadToTree(payload))
