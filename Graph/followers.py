@@ -72,7 +72,7 @@ class SNA_Helper:
                   if(result!=None or result2):
                             Dict [users[i].name]=users[i].posts[post].body
           if Dict == {}:
-                return "didn't match any post"                  
+                return "The keyword didn't match any post or topic"                  
 
           return Dict
     
