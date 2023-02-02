@@ -43,7 +43,7 @@ class SNA_Helper:
         users = graph.vertices
         most_influencer = users[0]
         for i in range(1, graph.numUsers):
-            if len(graph.getUserFollowedList(users[i])) > len(graph.getUserFollowedList(most_influencer)) :
+            if len(graph.getUserFollowerList(users[i])) > len(graph.getUserFollowerList(most_influencer)) :
                 most_influencer = users[i]
 
         return most_influencer
@@ -55,7 +55,7 @@ class SNA_Helper:
         users = graph.vertices
         most_active = users[0]
         for i in range(1, graph.numUsers):
-            if len(graph.getUserFollowerList(users[i])) + len(graph.getUserFollowedList(users[i])) > len(graph.getUserFollowerList(most_active)) + len(graph.getUserFollowedList(most_active)):
+            if len(graph.getUserFollowedList(users[i])) > len(graph.getUserFollowedList(most_active)):
                 most_active = users[i]
 
         return most_active

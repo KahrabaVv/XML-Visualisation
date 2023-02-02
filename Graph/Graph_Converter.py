@@ -102,7 +102,7 @@ class GraphOfUsers:
     def getUserByIndex(self, index: int) -> graphUser:
         return self.vertices[index]
 
-    #return list of users that followed by certain user
+    #return list of user whos followering certain user
     def getUserFollowerList(self, user: graphUser)-> list[graphUser]:
         following = []
         for i in range(0,self.numUsers):
@@ -113,7 +113,7 @@ class GraphOfUsers:
         return following
         pass
 
-    #return list of user whos followering certain user
+    #return list of users that followed by certain user
     def getUserFollowedList (self, user: graphUser) -> list:
         followers = []
         for i in range (0,self.numUsers):
