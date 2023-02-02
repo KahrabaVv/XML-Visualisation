@@ -1,13 +1,15 @@
-from read_xml import graphUser, userPost
-from Graph_Converter import GraphOfUsers
+from Graph.read_xml import graphUser, userPost
+from Graph.Graph_Converter import GraphOfUsers
 import re
+
+
 class SNA_Helper:
     def __int__(self):
         pass
 
     # function to get the mutual followers between 2 users
     @staticmethod
-    def getMutualFollowers(user1:graphUser, user2:graphUser) -> list:
+    def getMutualFollowers(user1: graphUser, user2: graphUser) -> list:
         mutualFollowers = []
         for follower in user1.followers:
             if follower in user2.followers:
@@ -17,10 +19,9 @@ class SNA_Helper:
         return mutualFollowers
         pass
 
-
     # suggesting a list of users to follow for each user (the followers of his followers)
     @staticmethod
-    def suggestFollowers(user:graphUser, graph: GraphOfUsers) -> list:
+    def suggestFollowers(user: graphUser, graph: GraphOfUsers) -> list:
         suggestedFollowers = []
         for follower in user.followers:
             for followerFollower in graph.getUserFromId(follower).followers:
@@ -32,18 +33,16 @@ class SNA_Helper:
         return suggestedFollowers
         pass
 
-
     # A function that returns the most influencer user in the network who has most followers
     @staticmethod
     def mostInfluencerUser(graph: GraphOfUsers) -> graphUser:
         users = graph.vertices
         most_influencer = users[0]
         for i in range(1, graph.numUsers):
-            if len(graph.getUserFollowerList(users[i])) > len(graph.getUserFollowerList(most_influencer)) :
+            if len(graph.getUserFollowerList(users[i])) > len(graph.getUserFollowerList(most_influencer)):
                 most_influencer = users[i]
 
         return most_influencer
-
 
     # A function that returns the most active user in the network who is the most connected user to other users
     @staticmethod
@@ -55,51 +54,50 @@ class SNA_Helper:
                 most_active = users[i]
 
         return most_active
-    @staticmethod           
-    def post_search(graph,string):
-          users=graph.vertices
-          numUsers=graph.numUsers
-          Dict={}
-          for i in range (0,numUsers):
-                postsnum=len(users[i].posts)
-                for post in range(0,postsnum):
-                  result2=False
-                  postbody=(users[i].posts[post].body)
-                  topicbody=(users[i].posts[post].topics)
-                  result=(re.search(string, postbody))
-                  if string in topicbody:
-                        result2=True      
-                  if(result!=None or result2):
-                            Dict [users[i].name]=users[i].posts[post].body
-          if Dict == {}:
-                return "didn't match any post"                  
 
-          return Dict
-    
-    visited = set() # Set to keep track of visited nodes of graph.
+    @staticmethod
+    def post_search(graph, string) -> dict:
+        users = graph.vertices
+        numUsers = graph.numUsers
+        Dict = {}
+        for i in range(0, numUsers):
+            postsnum = len(users[i].posts)
+            for post in range(0, postsnum):
+                result2 = False
+                postbody = (users[i].posts[post].body)
+                topicbody = (users[i].posts[post].topics)
+                result = (re.search(string, postbody))
 
-    def dfs(visited, graph, node):  #function for dfs 
+                if string in topicbody:
+                    result2 = True
+
+                if (result != None or result2):
+                    Dict[users[i].name] = users[i].posts[post].body
+        if Dict == {}:
+            return {"No Results Found": "-1"}
+
+        return Dict
+
+    visited = set()  # Set to keep track of visited nodes of graph.
+
+    def dfs(visited, graph, node):  # function for dfs
         if node not in visited:
-            print (node)
+            print(node)
             visited.add(node)
             for neighbour in graph[node]:
                 dfs(visited, graph, neighbour)
 
+
 class Dictionary:  # I didn't use it when you say --> use hash mab normally without making implemention.
 
     def __init__(self):
-            self.keys = []
-            self.values = []
+        self.keys = []
+        self.values = []
 
     def add(self, key, value):
-            self.keys.append(key)
-            self.values.append(value)
+        self.keys.append(key)
+        self.values.append(value)
 
     def get(self, key):
-            if key in self.keys:
-                  return self.values[self.keys.index(key)]
-
-
-                  
-
-
+        if key in self.keys:
+            return self.values[self.keys.index(key)]

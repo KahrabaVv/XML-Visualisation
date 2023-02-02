@@ -1,4 +1,4 @@
-from read_xml import graphUser, userPost
+from Graph.read_xml import graphUser, userPost
 NULL_EDGE = 0
 
 
