@@ -480,25 +480,23 @@ def newWindow():
 
 def getMutualFriends(user1, user2):
     # Convert user1 and user2 to int
-    user1 = int(user1)
-    user2 = int(user2)
-    users = graph.vertices
-    mutual_friends = SNA_Helper().getMutualFollowers(users[user1], users[user2])
+    user1 = graph.getUserFromId(int(user1))
+    user2 = graph.getUserFromId(int(user2))
+    mutual_friends = SNA_Helper().getMutualFollowers(user1, user2)
     listbox_mutual.delete(0, tk.END)
     if len(mutual_friends) == 0:
         listbox_mutual.insert(tk.END, "No mutual friends found")
     else:
         for friend in mutual_friends:
-            listbox_mutual.insert(tk.END, users[friend - 1].name)
+            listbox_mutual.insert(tk.END, graph.getUserFromId(friend).name)
 
 def getSuggestions(user):
     # Get suggestions for a user
-    users = graph.vertices
-    suggestions = SNA_Helper().suggestFollowers(users[int(user)], graph)
+    suggestions = SNA_Helper().suggestFollowers(graph.getUserFromId(int(user)), graph)
     print(suggestions)
     listbox_suggestions.delete(0, tk.END)
     if len(suggestions) == 0:
         listbox_suggestions.insert(tk.END, "No suggestions found")
     else:
         for suggestion in suggestions:
-            listbox_suggestions.insert(tk.END, users[suggestion - 1].name)
+            listbox_suggestions.insert(tk.END, graph.getUserFromId(suggestion).name)

@@ -1,5 +1,5 @@
-from read_xml import graphUser, userPost
-from Graph_Converter import GraphOfUsers
+from Graph.read_xml import graphUser, userPost
+from Graph.Graph_Converter import GraphOfUsers
 import re
 
 
