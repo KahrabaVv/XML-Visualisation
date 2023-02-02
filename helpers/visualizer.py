@@ -29,7 +29,9 @@ class GraphVisualization:
 @staticmethod
 def visualizeGraph(graph: GraphOfUsers):
     G = GraphVisualization()
+    # G.visual = []
     edges = graph.edges
+    print("Edges: " + str(edges))
     for i in range(0, graph.numUsers):
         for j in range(0, graph.numUsers):
             if edges[i][j] != 0:

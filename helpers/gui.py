@@ -1,3 +1,4 @@
+import copy
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
@@ -304,16 +305,16 @@ def populateMatrix(tab):
             else:
                 break
 
-    # Populating the rows
-    edges = graph.edges
+    # Deep Copy of the edges
+    customizedEdges = copy.deepcopy(graph.edges)
     for i in range(0, lenOfUsers):
-        for j in range(0, len(edges[i])):
-            edges[i][j] = str(edges[i][j])
-        edges[i].insert(0, graph.vertices[i].id)
+        for j in range(0, len(customizedEdges[i])):
+            customizedEdges[i][j] = str(customizedEdges[i][j])
+        customizedEdges[i].insert(0, graph.vertices[i].id)
 
     # Inserting the data
     for i in range(0, lenOfUsers):
-        trv.insert("", 'end', text=graph.vertices[i].id, values=edges[i])
+        trv.insert("", 'end', text=graph.vertices[i].id, values=customizedEdges[i])
 
 
 def visualize():
@@ -439,7 +440,8 @@ def newWindow():
     global graph
     mostInf = SNA_Helper().mostInfluencerUser(graph)
     mostAct = SNA_Helper().mostActiveUser(graph)
-    mostActiveUser = "Most Active User: #" + str(mostAct.id) + " " + mostAct.name + " follows " + str(len(graph.getUserFollowedList(graph.vertices[mostAct.id]))) + " users"
+    mostActiveUser = "Most Active User: #" + str(mostAct.id) + " " + mostAct.name + " follows " + str(
+        len(graph.getUserFollowedList(graph.vertices[mostAct.id]))) + " users"
     mostInfluencedUser = "Most Influencer User: #" + str(mostInf.id) + " " + mostInf.name + " with " + str(
         len(mostInf.followers)) + " followers"
 
@@ -458,7 +460,7 @@ def newWindow():
     tab1 = ttk.Frame(tabControl)  # Create a tab
     tabControl.add(tab1, text='Matrix Analysis')  # Add the tab
 
-    # 2D Matrix 7x7
+    # 2D Matrix
     populateMatrix(tab1)
 
     # Create Network Analysis Tab
