@@ -1,5 +1,5 @@
-from Graph.read_xml import graphUser, userPost
-from Graph.Graph_Converter import GraphOfUsers
+from read_xml import graphUser, userPost
+from Graph_Converter import GraphOfUsers
 import re
 
 
@@ -19,6 +19,7 @@ class SNA_Helper:
         return mutualFollowers
         pass
 
+
     # suggesting a list of users to follow for each user (the followers of his followers)
     @staticmethod
     def suggestFollowers(user: graphUser, graph: GraphOfUsers) -> list:
@@ -33,6 +34,7 @@ class SNA_Helper:
         return suggestedFollowers
         pass
 
+
     # A function that returns the most influencer user in the network who has most followers
     @staticmethod
     def mostInfluencerUser(graph: GraphOfUsers) -> graphUser:
@@ -43,6 +45,7 @@ class SNA_Helper:
                 most_influencer = users[i]
 
         return most_influencer
+
 
     # A function that returns the most active user in the network who is the most connected user to other users
     @staticmethod
