@@ -387,6 +387,9 @@ def newWindow():
     tab1 = ttk.Frame(tabControl)  # Create a tab
     tabControl.add(tab1, text='Matrix Analysis')  # Add the tab
 
+    # 2D Matrix 7x7
+    populateMatrix(tab1)
+
     # Create Network Analysis Tab
     tab2 = ttk.Frame(tabControl)  # Add a second tab
     tabControl.add(tab2, text='SNA Analysis')  # Make second tab visible
@@ -500,3 +503,47 @@ def getSuggestions(user):
     else:
         for suggestion in suggestions:
             listbox_suggestions.insert(tk.END, graph.getUserFromId(suggestion).name)
+
+
+def populateMatrix(tab):
+    # Label for the matrix
+    ttk.Label(tab, text="Adjacency Matrix", font=("Helvetica", 16)).grid(column=0, row=0, padx=8, pady=4)
+
+    # Get the number of users
+    lenOfUsers = len(graph.vertices)
+
+    # create the tree and scrollbars
+    trv = ttk.Treeview(tab, selectmode ='browse')
+    trv.grid(row=1, column=0, padx=5, pady=5, sticky='nsew')
+
+    # Defining number of columns
+    arry = ()
+    for i in range(0, lenOfUsers + 1):
+        arry = arry + (str(i + 1),)
+    trv["columns"] = arry
+
+    # Defining heading
+    trv['show'] = 'headings'
+
+    # Formatting columns
+    for column in trv["columns"]:
+        trv.column(column, width=63, anchor='c')
+
+    # Populating the columns
+    for column in trv["columns"]:
+        if column == "1":
+            trv.heading(column, text="User ID")
+        else:
+            trv.heading(column, text=graph.vertices[int(column) - 2].id)
+
+    # Populating the rows
+    edges = graph.edges
+    for i in range(0, len(edges)):
+        for j in range(0, len(edges[i])):
+            edges[i][j] = str(edges[i][j])
+        edges[i].insert(0, graph.vertices[i].id)
+
+    # Inserting the data
+    for i in range(0, len(edges)):
+        trv.insert("", 'end', text=graph.vertices[i].id, values=edges[i])
+
